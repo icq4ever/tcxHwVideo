@@ -2,7 +2,10 @@
 build/
 build-*/
 out/
-bin/
+bin/*
+!bin/data/
+bin/data/*
+!bin/data/.gitkeep
 
 # CMake
 CMakeCache.txt
