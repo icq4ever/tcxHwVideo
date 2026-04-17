@@ -1,4 +1,32 @@
-# tcxHwVideo
+# tcxHwVideo — archived
+
+> **⚠️ This addon is archived.**
+>
+> The hardware decode functionality originally developed here has been **merged into TrussC core** as of PR [#30](https://github.com/TrussC-org/TrussC/pull/30). `tc::VideoPlayer` on Linux now auto-detects VAAPI / V4L2M2M / DRM / CUDA / VDPAU backends with a software fallback — no addon needed.
+>
+> This repository is kept for reference / git history only; no further development will happen here.
+
+**Use `tc::VideoPlayer` from TrussC core instead:**
+
+```cpp
+tc::VideoPlayer video;
+video.load("movie.mp4");
+video.play();
+
+video.isUsingHwAccel();   // true if a HW backend is active
+video.getHwAccelName();   // "vaapi", "v4l2m2m", "drm", "cuda", "vdpau", or "software"
+video.setUseHwAccel(false);  // force software decode (call before load)
+```
+
+Related PRs:
+
+- [#28](https://github.com/TrussC-org/TrussC/pull/28) — Linux audio playback
+- [#30](https://github.com/TrussC-org/TrussC/pull/30) — HW decode integration
+- [#31](https://github.com/TrussC-org/TrussC/pull/31) — AV sync (audio-master clock + hard re-sync)
+
+---
+
+## Original description (for reference)
 
 TrussC addon for hardware-accelerated video playback via FFmpeg.
 
@@ -11,9 +39,7 @@ Automatically selects the best available hardware backend at runtime:
 | DRM        | Raspberry Pi 5        |
 | *(fallback)* | Software decode     |
 
----
-
-## Requirements
+### Requirements
 
 - TrussC
 - FFmpeg with hardware decode support (`libavcodec`, `libavutil`)
@@ -22,9 +48,7 @@ Automatically selects the best available hardware backend at runtime:
 
 On Raspberry Pi OS and most Linux distros, the system FFmpeg package includes these.
 
----
-
-## Usage
+### Usage
 
 ```cpp
 #include "tcxHwVideoPlayer.h"
@@ -47,9 +71,7 @@ void draw() {
 
 Drop-in replacement for `tc::VideoPlayer` with the same API.
 
----
-
-## API
+### API
 
 ```cpp
 // Load / playback — same as VideoPlayer
@@ -75,32 +97,6 @@ video.getHwAccelName();     // "vaapi", "v4l2m2m", "drm", or "software"
 // Pixel access (avoid per-frame — triggers DMA transfer from GPU)
 video.getPixels();
 ```
-
----
-
-## addons.make
-
-```
-tcxHwVideo
-```
-
----
-
-## Notes
-
-- `getPixels()` performs a GPU→CPU DMA transfer (`av_hwframe_transfer_data`). Avoid calling every frame unless pixel access is required. For display-only use, `draw()` uses the GPU texture directly.
-- Audio is pre-decoded at load time (same as `tc::VideoPlayer`).
-- macOS / Windows support is planned.
-
----
-
-## Roadmap
-
-- [ ] macOS — VideoToolbox (`AV_HWDEVICE_TYPE_VIDEOTOOLBOX`)
-- [ ] Windows — D3D11VA / NVDEC
-- [ ] NVIDIA Linux — CUDA / NVDEC (`AV_HWDEVICE_TYPE_CUDA`)
-- [ ] Streaming audio (instead of pre-loading) for very long videos
-- [ ] `getPixels()` zero-copy path via DMA-BUF
 
 ---
 
