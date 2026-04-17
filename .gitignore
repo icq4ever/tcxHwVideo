@@ -2,10 +2,10 @@
 build/
 build-*/
 out/
-bin/*
-!bin/data/
-bin/data/*
-!bin/data/.gitkeep
+**/bin/*
+!**/bin/data/
+**/bin/data/*
+!**/bin/data/.gitkeep
 
 # CMake
 CMakeCache.txt
@@ -15,6 +15,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps/
+CMakePresets.json
 
 # IDE
 .vscode/
