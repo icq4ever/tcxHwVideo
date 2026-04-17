@@ -598,8 +598,6 @@ void TCHwVideoPlayerImpl::update(tcx::HwVideoPlayer* player) {
     while (!frameQueue_.empty()) {
         FrameData& front = frameQueue_.front();
         if (front.pts <= targetPts) {
-            trussc::Texture& tex = player->getTexture();
-            tex.loadData(front.pixels.data(), width_, height_, 4);
             if ((int)front.pixels.size() == rgbaBufferSize_)
                 std::memcpy(rgbaBuffer_, front.pixels.data(), rgbaBufferSize_);
             hasNewFrame_ = true;
@@ -608,6 +606,11 @@ void TCHwVideoPlayerImpl::update(tcx::HwVideoPlayer* player) {
         } else {
             break;
         }
+    }
+
+    // Upload texture once after consuming all pending frames
+    if (hasNewFrame_) {
+        player->getTexture().loadData(rgbaBuffer_, width_, height_, 4);
     }
 
     if (frameQueue_.empty() && isFinished_) {
